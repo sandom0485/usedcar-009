@@ -32,7 +32,30 @@
         <![endif]-->
     </head>
     <body>
+    <?php
+        include_once("conne.php");
+        if(isset($_POST['submit'])){
+            //mssqli_escaps_string =>ป้องกันการถูก sql 
+            $username = $conn->real_escape_string($_POST['username']);
+            $password = ($conn->real_escape_string($_POST['password']));
 
+            $sql = "SELECT * FROM customers WHERE username='$username' AND password = '$password'";
+            echo "$sql";
+            //mysqli_query
+            $result = $conn->query($sql);
+            //print_r($result);
+            if($result->num_rows>0){
+                //เก็บค่าลง Session
+                //Fetch data
+                $row=$result->fetch_array();        //mysqli_fetch_array();
+                $_SESSION['id']=$row['id'];
+                $_SESSION['name']=$row['firstname'] . " " . $row['lastname'];
+                $_SESSION['username']=$row['username'];
+                //วาน์ปไปหน้าแรก redirct
+                header("location: index.php");
+            }
+        }
+    ?>
         <div class="container">
             <div class="row">
                 <div class="col-md-4 col-md-offset-4">
@@ -41,16 +64,16 @@
                             <h3 class="panel-title text-center">Please Sign In</h3>
                         </div>
                         <div class="panel-body">
-                            <form role="form">
+                            <form role="form" method="post">
                                 <fieldset>
                                     <div class="form-group">
-                                        <input class="form-control" placeholder="E-mail" name="email" type="email" autofocus>
+                                        <input class="form-control" placeholder="username" name="username" type="text" autofocus>
                                     </div>
                                     <div class="form-group">
                                         <input class="form-control" placeholder="Password" name="password" type="password" value="">
                                     </div>
                                     <!-- Change this to a button or input when using this as a form -->
-                                    <button class="btn btn-lg btn-success btn-block">Login</button>
+                                    <button type="submit" class="btn btn-lg btn-success btn-block" name="submit">Login</button>
                                 </fieldset>
                             </form>
                         </div>
@@ -70,6 +93,7 @@
 
         <!-- Custom Theme JavaScript -->
         <script src="js/startmin.js"></script>
+        
 
     </body>
 </html>
